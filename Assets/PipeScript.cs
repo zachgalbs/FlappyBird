@@ -19,4 +19,3 @@ public class PipeScript : MonoBehaviour
         transform.position += Vector3.right * -pipeSpeed * Time.deltaTime;
     }
 }
-   

@@ -8,11 +8,12 @@ public class movementScript : MonoBehaviour
     public GameObject pipe;
     public float jumpHeight;
     private float lastTime;
-    private float smoothTime = 0.3F;
     public float creationDelay; 
     private float[] ySlotValues = {-2.5F, 2.5F};
-    private Vector3 targetPosition;
-
+    private Vector3 direction;
+    private float gravity = -7.8F;
+    private bool collisionOccured = false;
+    private bool endgame = false;
     void Start()
     {
         lastTime = Time.time;
@@ -21,14 +22,9 @@ public class movementScript : MonoBehaviour
     void Update()
     {
         // This is saying: whenever w is pressed, move up the object by a certain amount
-        if (Input.GetKeyDown(KeyCode.Space)) 
+        if (Input.GetKeyDown(KeyCode.Space) && !collisionOccured)
         {
-            transform.position += Vector3.up * jumpHeight;
-            // This is for the smooth animation
-            ypos = transform.position.y + Vector3.up * jumpHeight;
-            Vector3 newPos = new Vector3(transform.position.x, (ypos), transform.position.z);
-            targetPosition = newPos;
-            transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref jumpHeight, smoothTime);
+            direction = Vector3.up * jumpHeight;
         }
 
         // This is the code to make multiple pipes
@@ -38,13 +34,23 @@ public class movementScript : MonoBehaviour
             GameObject newpipe = Instantiate(pipe, new Vector2(11F, ySlotValues[upOrDown]), Quaternion.identity);
             lastTime = Time.time;
         }
+        if (!endgame)
+        {
+        transform.position += direction * Time.deltaTime;
+        direction.y += gravity * Time.deltaTime;
+        }
     }
     void OnCollisionEnter2D(Collision2D col)
     {
         if (col.collider.tag == "pipes")
         {
             Debug.Log("Collision");
-            
+            collisionOccured = true;
+        }
+        if (col.collider.tag == "Wall")
+        {
+            Debug.Log("end level");
+            endgame = true;
         }
     }
 }

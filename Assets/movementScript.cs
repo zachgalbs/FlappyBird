@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class movementScript : MonoBehaviour
 {
@@ -40,17 +41,30 @@ public class movementScript : MonoBehaviour
         direction.y += gravity * Time.deltaTime;
         }
     }
+
+
+
+
     void OnCollisionEnter2D(Collision2D col)
     {
+        
+        SceneManager.LoadScene("gameOver");
+
         if (col.collider.tag == "pipes")
         {
             Debug.Log("Collision");
             collisionOccured = true;
+            endgame = true;
         }
         if (col.collider.tag == "Wall")
         {
             Debug.Log("end level");
             endgame = true;
         }
+
+
+
+
+
     }
 }

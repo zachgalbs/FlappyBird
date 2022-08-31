@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
 public class movementScript : MonoBehaviour
 {
 
@@ -15,6 +14,8 @@ public class movementScript : MonoBehaviour
     private float gravity = -7.8F;
     private bool collisionOccured = false;
     private bool endgame = false;
+    private List<GameObject> pipes = new();
+
     void Start()
     {
         lastTime = Time.time;
@@ -33,23 +34,33 @@ public class movementScript : MonoBehaviour
         {
             int upOrDown = Random.Range(0,2);
             GameObject newpipe = Instantiate(pipe, new Vector2(11F, ySlotValues[upOrDown]), Quaternion.identity);
+            pipes.Add(newpipe);
             lastTime = Time.time;
         }
+        
         if (!endgame)
         {
-        transform.position += direction * Time.deltaTime;
-        direction.y += gravity * Time.deltaTime;
+            transform.position += direction * Time.deltaTime;
+            direction.y += gravity * Time.deltaTime;
         }
+
+        List<GameObject> cleanpipelist = new();
+        foreach (GameObject newpipe in pipes)
+        {
+            float xpos = newpipe.transform.position.x;
+
+            if (xpos <= -11)
+            {
+                Destroy(newpipe);
+            } else {
+                cleanpipelist.Add(newpipe);
+            }
+        }
+        pipes = cleanpipelist;
     }
-
-
-
-
     void OnCollisionEnter2D(Collision2D col)
     {
-        
         SceneManager.LoadScene("gameOver");
-
         if (col.collider.tag == "pipes")
         {
             Debug.Log("Collision");
@@ -61,10 +72,5 @@ public class movementScript : MonoBehaviour
             Debug.Log("end level");
             endgame = true;
         }
-
-
-
-
-
     }
 }
